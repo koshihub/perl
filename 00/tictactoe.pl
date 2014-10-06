@@ -5,7 +5,7 @@ my @board = (0, 0, 0, 0, 0, 0, 0, 0, 0);
 my $human = 1;
 my $cpu = 2;
 
-sub printBoard {
+sub show_board {
     print("\n");
     for (my $i = 0; $i < 3; $i++) {
 	for (my $j = 0; $j < 3; $j++) {
@@ -30,19 +30,47 @@ sub printBoard {
     print("\n\n");
 }
 
+sub cpu_move {
+    my @empty_indexes;
+    for (my $i = 0; $i < 9; $i++) {
+	if ($board[$i] == 0) {
+	    push(@empty_indexes, $i);
+	}
+    }
+
+    my $pos = $empty_indexes[rand(scalar(@empty_indexes))];
+    put($pos, $cpu);
+}
+
+sub put {
+    my ($pos, $move) = @_;
+    my $suc = 0;
+
+    if ($board[$pos] != 0) {
+	print("already put position\n");
+    }
+    else {
+	$suc = 1;
+	$board[$pos] = $move;
+    }
+
+    return $suc;
+}
+
 while (1) {
-    printBoard();
+    show_board();
     
     print("where do you put? [0~8]\n:");
     my $input = <STDIN>;
     chomp($input);
-    
-    if ($input >= 0 && $input <= 8) {
-	if ($board[$input] != 0) {
-	    print("already put position\n");
-	}
-	else {
-	    $board[$input] = $human;
+
+    if ($input =~ /^q$/) {
+	print("quit\n");
+	last;
+    }
+    elsif ($input =~ /^[0-8]$/) {
+	if (put($input, $human)) {
+	    cpu_move();
 	}
     }
     else {
@@ -50,5 +78,4 @@ while (1) {
     }
 }
 
-printBoard();
 1;
